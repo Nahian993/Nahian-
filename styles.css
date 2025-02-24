@@ -1,5 +1,88 @@
 <style>
     
+
+
+
+
+/* Styling for the body */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 200vh; /* to allow scrolling */
+  background-color: #f0f0f0;
+  cursor: url('watch-cursor.png'), auto; /* Use custom watch cursor */
+}
+
+/* Custom cursor styling */
+.custom-cursor {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-in-out;
+  z-index: 1000;
+}
+
+/* Cursor trail styling */
+.cursor-trail {
+  width: 5px;
+  height: 5px;
+  background-color: rgba(255, 0, 0, 0.5);
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.cursor-trail:nth-child(2n) {
+  background-color: rgba(0, 0, 255, 0.5);
+}
+
+.cursor-trail:nth-child(3n) {
+  background-color: rgba(0, 255, 0, 0.5);
+}
+
+/* Highlighting elements on hover */
+a:hover, button:hover {
+  background-color: #ddd;
+}
+
+/* Animating cursor on hover */
+a:hover ~ .custom-cursor, button:hover ~ .custom-cursor {
+  transform: scale(2);
+  background-color: #00ff00;
+}
+
+.custom-cursor {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  pointer-events: none; /* So it doesn't block click events */
+}
+
+.cursor-trail {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
     body {
     font-family: 'Arial', sans-serif;
     margin: 0;
@@ -150,7 +233,7 @@ nav ul li a:hover {
             list-style: none;
             padding: 0;
         }
-6        .dropdown:hover .dropdown-menu {
+       .dropdown:hover .dropdown-menu {
             display: block;
         }
         .dropdown-menu li {
@@ -740,44 +823,92 @@ button:focus {
 
 
 
-
-
-
-
-
-
-
 /* General section styles */
 .marquee {
-    padding-right: 0;
-    padding-left: 0;
-    background-color: black; /* Background color */
-    overflow: hidden; /* Hide overflow */
-    white-space: nowrap; /* Prevent text wrapping */
+  padding-right: 0;
+  padding-left: 0;
+  background-color: black; /* Background color */
+  overflow: hidden; /* Hide overflow */
+  white-space: nowrap; /* Prevent text wrapping */
+  position: relative;
+  padding-top: 5px; /* Reduced top padding */
+  padding-bottom: 5px; /* Reduced bottom padding */
 }
 
+/* Marquee group styles */
 .marquee__group {
-    display: flex;
-    animation: marquee 10s linear infinite; /* Animation for scrolling text */
+  display: flex;
+  animation: marquee 10s linear infinite; /* Animation for scrolling text */
+  will-change: transform; /* Optimizes animation performance */
 }
 
+/* Heading styles */
 .wp-block-heading {
-    color: white; /* Text color */
-    font-size: 2em; /* Font size */
-    text-transform: uppercase; /* Uppercase text */
-    margin: 0 2em; /* Margin around headings */
-    letter-spacing: 6px; /* Letter spacing */
+  color: white; /* Text color */
+  font-size: 2.5em; /* Increased font size */
+  text-transform: uppercase; /* Uppercase text */
+  margin: 0 1em; /* Reduced margin around headings */
+  letter-spacing: 8px; /* Increased letter spacing */
+  font-family: 'Arial', sans-serif; /* Font family */
+  transition: color 0.3s ease-in-out; /* Smooth color transition */
 }
 
 .wp-block-heading a {
-    color: white; /* Link color */
-    text-decoration: none; /* Remove underline */
+  color: white; /* Initial link color */
+  text-decoration: none; /* Remove underline */
+  transition: color 0.5s ease-in-out; /* Smooth color transition */
+}
+
+.wp-block-heading:hover, .wp-block-heading a:hover {
+  color: #00ff00; /* Hover text color */
+}
+
+/* Color change on hover */
+.color-change:hover {
+  animation: colorChange 2s infinite; /* Add animation to change colors */
+}
+
+@keyframes colorChange {
+  0% { color: red; }
+  25% { color: blue; }
+  50% { color: green; }
+  75% { color: purple; }
+  100% { color: orange; }
 }
 
 @keyframes marquee {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .wp-block-heading {
+    font-size: 1.5em; /* Adjust font size for smaller screens */
+    letter-spacing: 4px; /* Adjust letter spacing for smaller screens */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -785,144 +916,322 @@ button:focus {
    CSS Variables & Global Reset
    =============================== */
    :root {
-  --primary-color: #0073aa;
-  --secondary-color: #45a049;
-  --light-bg: #f9f9f9;
-  --dark-text: #333;
-  --muted-text: #666;
-  --border-color: #ddd;
-  --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.6;
-  background: linear-gradient(135deg, #f0f0f0, #ffffff);
-  color: var(--dark-text);
-  overflow-x: hidden;
-}
-
-/* ===============================
-   Container for Constrained Layout
-   =============================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* ===============================
-   Header with Slide Down Animation
-   =============================== */
-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  animation: slideDown 1s ease-out forwards;
-  padding: 1rem 2rem;
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(0); }
-}
-
-/* ===============================
-   Hero Section
-   =============================== */
-.hero {
-  min-height: 400px;
-  height: auto;
-  background: url('hero-image.jpg') center/cover no-repeat;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #fff;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  animation: fadeIn 2s ease forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.hero .content {
-  position: relative;
-  z-index: 1;
-  animation: scaleUp 1.5s ease forwards;
-}
-
-@keyframes scaleUp {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  letter-spacing: 2px;
-}
-
-.hero p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-/* ===============================
-   Trending Section
-   =============================== */
-.trending {
-  padding: 2rem 1rem;
-  background: var(--light-bg);
-  text-align: center;
-  animation: fadeInUp 1.2s ease forwards;
-}
-
-@keyframes fadeInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.trending h2 {
-  font-size: 2.5rem;
-  color: var(--dark-text);
-  margin-bottom: 1rem;
-}
-
-.trending p {
-  font-size: 1.2rem;
-  color: var(--muted-text);
-  margin-bottom: 2rem;
-}
-
+    --primary-color: #0073aa;
+    --secondary-color: #45a049;
+    --light-bg: #f9f9f9;
+    --dark-text: #333;
+    --muted-text: #666;
+    --border-color: #ddd;
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+    --container-width: 1200px;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #f0f0f0, #ffffff);
+    color: var(--dark-text);
+    overflow-x: hidden;
+  }
+  
+  .container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: slideDown 1s ease-out forwards;
+    padding: 1rem 2rem;
+  }
+  
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+  
+  .hero {
+    min-height: 400px;
+    background: url('hero-image.jpg') center/cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 2s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .hero .content {
+    position: relative;
+    z-index: 1;
+    animation: scaleUp 1.5s ease forwards;
+  }
+  
+  @keyframes scaleUp {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+  
+  .hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .trending {
+    padding: 1rem;
+    background: var(--light-bg);
+    text-align: center;
+    animation: fadeInUp 1.2s ease forwards;
+  }
+  
+  @keyframes fadeInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .trending h2 {
+    font-size: 2rem;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+  }
+  
+  .trending p {
+    font-size: 1rem;
+    color: var(--muted-text);
+    margin-bottom: 2rem;
+  }
+  
+  .section {
+    padding: 2rem 1rem;
+    background-color: var(--light-bg);
+    text-align: center;
+  }
+  
+  .section-heading h2 {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  
+  .section-heading h2::after {
+    content: "";
+    width: 80px;
+    height: 4px;
+    background: var(--secondary-color);
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .swiper-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .swiper-slide {
+    width: 300px !important;
+    margin: 0 8px;
+    transition: transform var(--transition-speed);
+  }
+  
+  .swiper-slide:hover {
+    transform: translateY(-10px);
+  }
+  
+  .product-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition-speed), transform var(--transition-speed);
+  }
+  
+  .product-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+  }
+  
+  .product-media {
+    position: relative;
+  }
+  
+  .product-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--secondary-color);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 5px;
+    animation: labelFadeIn 1s ease forwards;
+  }
+  
+  @keyframes labelFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .product-wish {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color var(--transition-speed);
+  }
+  
+  .product-wish:hover {
+    color: var(--secondary-color);
+  }
+  
+  .product-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .product-content {
+    padding: 1rem;
+    animation: contentFadeIn 1.5s ease forwards;
+  }
+  
+  @keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .product-add {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform var(--transition-speed);
+    animation: buttonBounce 2s ease infinite;
+  }
+  
+  @keyframes buttonBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+  
+  .product-add:hover {
+    background: var(--secondary-color);
+    transform: scale(1.05);
+  }
+  
+  .btn-outline {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    text-transform: uppercase;
+    border-radius: 5px;
+    transition: background var(--transition-speed), color var(--transition-speed);
+    animation: buttonFadeIn 1.5s ease forwards;
+  }
+  
+  @keyframes buttonFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .btn-outline:hover {
+    background: var(--primary-color);
+    color: #fff;
+  }
+  
+  /* Color change on hover */
+  .color-change:hover {
+    animation: colorChange 2s infinite; /* Add animation to change colors */
+  }
+  
+  @keyframes colorChange {
+    0% { color: red; }
+    25% { color: blue; }
+    50% { color: green; }
+    75% { color: purple; }
+    100% { color: orange; }
+  }
+  
+  @media (max-width: 768px) {
+    .swiper-slide {
+      width: calc(100% - 16px) !important;
+    }
+  
+    .section-heading h2 {
+      font-size: 2rem;
+    }
+  
+    .hero h1 {
+      font-size: 2rem;
+    }
+  
+    .hero p {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .hero h1 {
+      font-size: 1.5rem;
+    }
+  
+    .hero p {
+      font-size: 0.9rem;
+    }
+  }
+  
 /* ===============================
    Product of the Week Section
    =============================== */

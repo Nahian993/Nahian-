@@ -86,6 +86,26 @@
             <img src="" alt="Background Image 4">
             <img src="" alt="Background Image 5">
         </div>
+        <script src="script.js"></script>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const images = document.querySelectorAll('.background-images img');
+          let currentImageIndex = 0;
+      
+          function changeImage() {
+              images[currentImageIndex].classList.remove('active');
+              currentImageIndex = (currentImageIndex + 1) % images.length;
+              images[currentImageIndex].classList.add('active');
+          }
+      
+          setInterval(changeImage, 12000); // Change image every 12 seconds
+      
+          const shopButton = document.querySelector('.shop-button');
+          shopButton.addEventListener('click', function() {
+              alert('Button clicked!'); // Add your desired action here
+          });
+      });
+      </script>
         <h1>☬𝓒𝓻𝓸𝔀𝓷 𝓦𝓪𝓽𝓬𝓱☬</h1>      
         <p>Designed to elevate your online accessory store with an aura of elegance and luxury.</p>
         <a href="#products" class="shop-button">SHOP PRODUCTS</a>
@@ -102,6 +122,437 @@
 
         setInterval(cycleImages, 2000); // Change image every 2 seconds
     </script>
+
+ <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Lazy load images
+    const lazyLoadImages = () => {
+        const images = document.querySelectorAll('[data-src]');
+        const config = {
+            rootMargin: '0px 0px 200px 0px',
+            threshold: 0
+        };
+
+        let observer = new IntersectionObserver((entries, self) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    preloadImage(entry.target);
+                    self.unobserve(entry.target);
+                }
+            });
+        }, config);
+
+        images.forEach(image => observer.observe(image));
+    };
+
+    const preloadImage = (img) => {
+        const src = img.getAttribute('data-src');
+        if (!src) return;
+        img.src = src;
+    };
+
+    lazyLoadImages();
+
+    // Debounce function for resizing
+    const debounce = (func, wait = 20, immediate = true) => {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            const later = () => {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
+
+    // Responsive design adjustments
+    const responsiveDesign = () => {
+        const hero = document.querySelector('.hero');
+        const viewportWidth = window.innerWidth;
+
+        if (viewportWidth < 768) {
+            hero.style.height = '80vh';
+            hero.querySelector('h1').style.fontSize = '2.5rem';
+            hero.querySelector('p').style.fontSize = '1rem';
+            hero.querySelector('.shop-button').style.padding = '0.8em 1.5em';
+        } else {
+            hero.style.height = '100vh';
+            hero.querySelector('h1').style.fontSize = '4rem';
+            hero.querySelector('p').style.fontSize = '1.5rem';
+            hero.querySelector('.shop-button').style.padding = '1.2em 2.5em';
+        }
+    };
+
+    window.addEventListener('resize', debounce(responsiveDesign));
+    responsiveDesign(); // Initial call to set styles based on initial load
+
+    // Smooth scrolling
+    const smoothScroll = () => {
+        const links = document.querySelectorAll('a[href^="#"]');
+        links.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                document.querySelector(link.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    };
+
+    smoothScroll();
+
+    // Smooth animations for hero section
+    const heroAnimations = () => {
+        const hero = document.querySelector('.hero');
+        hero.style.transition = 'opacity 1s ease, transform 1s ease';
+        hero.style.opacity = '1';
+        hero.style.transform = 'translateY(0)';
+
+        const heroElements = document.querySelectorAll('.hero h1, .hero p, .hero .shop-button');
+        heroElements.forEach((element, index) => {
+            element.style.transition = `opacity 1s ease ${index * 0.3}s, transform 1s ease ${index * 0.3}s`;
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        });
+    };
+
+    setTimeout(heroAnimations, 500);
+
+    // Preload images on hover
+    const preloadHoverImages = () => {
+        const images = document.querySelectorAll('img[data-hover-src]');
+        images.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                const hoverSrc = img.getAttribute('data-hover-src');
+                if (!hoverSrc) return;
+                const preloadImage = new Image();
+                preloadImage.src = hoverSrc;
+            });
+        });
+    };
+
+    preloadHoverImages();
+
+    // Throttling scroll events
+    const throttle = (func, limit) => {
+        let lastFunc;
+        let lastRan;
+        return function() {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
+        };
+    };
+
+    // Optimize scroll-based animations
+    const optimizeScrollAnimations = () => {
+        const scrollElements = document.querySelectorAll('.scroll-element');
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (
+                elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend
+            );
+        };
+
+        const displayScrollElement = (element) => {
+            element.classList.add('scrolled');
+        };
+
+        const handleScrollAnimation = () => {
+            scrollElements.forEach(el => {
+                if (elementInView(el, 1.25)) {
+                    displayScrollElement(el);
+                }
+            });
+        };
+
+        window.addEventListener('scroll', throttle(handleScrollAnimation, 200));
+    };
+
+    optimizeScrollAnimations();
+});
+
+
+window.addEventListener('scroll', function() {
+  // You can add custom scrolling effects or logic here
+});
+
+
+
+ </script>
+
+<script>// JavaScript to enhance scrolling experience
+
+  // Function to smoothly scroll to a target element
+  function smoothScroll(target, duration) {
+    var targetElement = document.querySelector(target);
+    var targetPosition = targetElement.getBoundingClientRect().top;
+    var startPosition = window.pageYOffset;
+    var distance = targetPosition - startPosition;
+    var startTime = null;
+  
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime;
+      var timeElapsed = currentTime - startTime;
+      var run = ease(timeElapsed, startPosition, distance, duration);
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+    }
+  
+    function ease(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) return c / 2 * t * t + b;
+      t--;
+      return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+  
+    requestAnimationFrame(animation);
+  }
+  
+  // Event listener for smooth scrolling
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = this.getAttribute('href');
+      smoothScroll(target, 1000); // Adjust duration as needed
+    });
+  });
+  
+  // Highlighting sections on scroll
+  window.addEventListener('scroll', function() {
+    var sections = document.querySelectorAll('section');
+    var scrollPosition = document.documentElement.scrollTop || document.body.scrollTop;
+  
+    sections.forEach(function(section) {
+      if (scrollPosition >= section.offsetTop - section.clientHeight / 2 &&
+          scrollPosition < section.offsetTop + section.clientHeight / 2) {
+        section.classList.add('highlight');
+      } else {
+        section.classList.remove('highlight');
+      }
+    });
+  });
+  
+  // Custom scrolling effect (parallax)
+  window.addEventListener('scroll', function() {
+    var parallaxElements = document.querySelectorAll('.parallax');
+    var scrollPosition = window.pageYOffset;
+  
+    parallaxElements.forEach(function(elem) {
+      var depth = elem.getAttribute('data-depth');
+      var movement = (scrollPosition * depth);
+      elem.style.transform = `translateY(${movement}px)`;
+    });
+  });
+  
+  // Custom cursor following (for an additional cool effect)
+  document.addEventListener('mousemove', function(e) {
+    var cursor = document.querySelector('.custom-cursor');
+    cursor.style.left = `${e.pageX}px`;
+    cursor.style.top = `${e.pageY}px`;
+  });
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>// JavaScript for custom cursor functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const customCursor = document.querySelector('.custom-cursor');
+    const trailContainer = document.createElement('div');
+    trailContainer.classList.add('trail-container');
+    document.body.appendChild(trailContainer);
+  
+    // Create a trail effect by appending multiple trail elements
+    const trailElements = [];
+    for (let i = 0; i < 20; i++) {
+      const trail = document.createElement('div');
+      trail.classList.add('cursor-trail');
+      trailContainer.appendChild(trail);
+      trailElements.push(trail);
+    }
+  
+    let trailIndex = 0;
+  
+    document.addEventListener('mousemove', (e) => {
+      // Position the main custom cursor
+      customCursor.style.left = `${e.pageX}px`;
+      customCursor.style.top = `${e.pageY}px`;
+  
+      // Position the trail elements to create a following effect
+      const trail = trailElements[trailIndex];
+      trail.style.left = `${e.pageX}px`;
+      trail.style.top = `${e.pageY}px`;
+  
+      trailIndex = (trailIndex + 1) % trailElements.length;
+    });
+  
+    // Adding a custom click animation
+    document.addEventListener('click', () => {
+      customCursor.style.transform = 'scale(0.5)';
+      setTimeout(() => {
+        customCursor.style.transform = 'scale(1)';
+      }, 150);
+    });
+  
+    // Custom cursor color change on scroll
+    window.addEventListener('scroll', () => {
+      customCursor.style.backgroundColor = `rgb(${Math.min(255, window.scrollY)}, ${Math.min(255, 255 - window.scrollY)}, 150)`;
+    });
+  
+    // Adding random shape changes to the custom cursor
+    const shapes = ['50%', '0%', '25%', '50% 50% 0 0', '0 50% 50% 0'];
+    setInterval(() => {
+      const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+      customCursor.style.borderRadius = randomShape;
+    }, 1000);
+  
+    // Implementing hover effects
+    document.querySelectorAll('a, button').forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        customCursor.style.transform = 'scale(1.5)';
+        customCursor.style.backgroundColor = '#00ff00';
+      });
+  
+      element.addEventListener('mouseleave', () => {
+        customCursor.style.transform = 'scale(1)';
+        customCursor.style.backgroundColor = '#ff0000';
+      });
+    });
+  
+    // Adding a follow effect with a slight delay
+    const mousePos = { x: 0, y: 0 };
+    document.addEventListener('mousemove', (e) => {
+      mousePos.x = e.pageX;
+      mousePos.y = e.pageY;
+    });
+  
+    requestAnimationFrame(function followCursor() {
+      const dx = mousePos.x - parseFloat(customCursor.style.left || 0);
+      const dy = mousePos.y - parseFloat(customCursor.style.top || 0);
+      customCursor.style.left = `${parseFloat(customCursor.style.left || 0) + dx * 0.1}px`;
+      customCursor.style.top = `${parseFloat(customCursor.style.top || 0) + dy * 0.1}px`;
+      requestAnimationFrame(followCursor);
+    });
+  });
+  </script>
+
+<script>document.addEventListener('DOMContentLoaded', () => {
+  const customCursor = document.querySelector('.custom-cursor');
+  const trailContainer = document.createElement('div');
+  trailContainer.classList.add('trail-container');
+  document.body.appendChild(trailContainer);
+
+  // Create a trail effect by appending multiple trail elements
+  const trailElements = [];
+  for (let i = 0; i < 20; i++) {
+    const trail = document.createElement('div');
+    trail.classList.add('cursor-trail');
+    trailContainer.appendChild(trail);
+    trailElements.push(trail);
+  }
+
+  let trailIndex = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    // Position the main custom cursor
+    customCursor.style.left = `${e.pageX}px`;
+    customCursor.style.top = `${e.pageY}px`;
+
+    // Position the trail elements to create a following effect
+    const trail = trailElements[trailIndex];
+    trail.style.left = `${e.pageX}px`;
+    trail.style.top = `${e.pageY}px`;
+
+    trailIndex = (trailIndex + 1) % trailElements.length;
+  });
+
+  // Adding a custom click animation
+  document.addEventListener('click', () => {
+    customCursor.style.transform = 'scale(0.5)';
+    setTimeout(() => {
+      customCursor.style.transform = 'scale(1)';
+    }, 150);
+  });
+
+  // Custom cursor color change on scroll
+  window.addEventListener('scroll', () => {
+    customCursor.style.backgroundColor = `rgb(${Math.min(255, window.scrollY)}, ${Math.min(255, 255 - window.scrollY)}, 150)`;
+  });
+
+  // Adding random shape changes to the custom cursor
+  const shapes = ['50%', '0%', '25%', '50% 50% 0 0', '0 50% 50% 0'];
+  setInterval(() => {
+    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+    customCursor.style.borderRadius = randomShape;
+  }, 1000);
+
+  // Implementing hover effects
+  document.querySelectorAll('a, button').forEach(element => {
+    element.addEventListener('mouseenter', () => {
+      customCursor.style.transform = 'scale(1.5)';
+      customCursor.style.backgroundColor = '#00ff00';
+    });
+
+    element.addEventListener('mouseleave', () => {
+      customCursor.style.transform = 'scale(1)';
+      customCursor.style.backgroundColor = '#ff0000';
+    });
+  });
+
+  // Adding a follow effect with a slight delay
+  const mousePos = { x: 0, y: 0 };
+  document.addEventListener('mousemove', (e) => {
+    mousePos.x = e.pageX;
+    mousePos.y = e.pageY;
+  });
+
+  requestAnimationFrame(function followCursor() {
+    const dx = mousePos.x - parseFloat(customCursor.style.left || 0);
+    const dy = mousePos.y - parseFloat(customCursor.style.top || 0);
+    customCursor.style.left = `${parseFloat(customCursor.style.left || 0) + dx * 0.1}px`;
+    customCursor.style.top = `${parseFloat(customCursor.style.top || 0) + dy * 0.1}px`;
+    requestAnimationFrame(followCursor);
+  });
+
+  // Setting the custom cursor to a watch icon
+  customCursor.style.width = '32px';
+  customCursor.style.height = '32px';
+  customCursor.style.backgroundImage = 'url("C:\Users\paxso\Downloads\mic.jpg")'; // Change this to the path of your watch icon image
+  customCursor.style.backgroundSize = 'cover';
+});
+</script>
+
+
+
+
+
+
 
 
 
@@ -245,56 +696,50 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-
     <section class="wp-block-group alignfull marquee has-black-background-color has-background">
-        <div class="wp-block-group marquee__group is-nowrap is-layout-flex">
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-                <a href="#">Shop New Arrivals</a>
-            
-            </h4>
-        </h4>
-        <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-            <a href="#">Shop New Arrivals</a>
-        </h4>
-        <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-            <a href="#">Shop New Arrivals</a>
-        </div>
-        </div>
-        <div class="wp-block-group marquee__group is-nowrap is-layout-flex">
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-                <a href="#">Shop New Arrivals</a>
-            </h4>
-            <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-                <a href="#">Shop New Arrivals</a>
-            
-            </h4>
-        </h4>
-        <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
-            <a href="#">Shop New Arrivals</a>
-        </h4>
-        <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
-            <a href="#">Shop New Arrivals</a>
-        </div>
-    </section>
+      <div class="wp-block-group marquee__group is-nowrap is-layout-flex">
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+      </div>
+      <div class="wp-block-group marquee__group is-nowrap is-layout-flex">
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+          <h4 class="wp-block-heading has-text-align-center has-white-color has-text-color has-link-color has-extra-large-font-size" style="letter-spacing:6px" aria-hidden="true">
+              <a href="#" class="color-change">Shop New Arrivals</a>
+          </h4>
+      </div>
+  </section>
+  
     
-
-
-
 
 
 
@@ -313,6 +758,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <ul class="new-slider slider-arrow">
               <div class="swiper mySwiper" loopfillgroupwithblank="true">
                 <div class="swiper-wrapper">
+                  <!-- Slide 1 -->
                   <div class="swiper-slide" data-swiper-slide-index="0">
                     <li>
                       <div class="product-card">
@@ -330,10 +776,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="product-content">
                           <h6 class="brand-name">Montrex</h6>
                           <h6 class="product-name">
-                            <a href="/product/details/2367" class="">MT5049GS BK BK MT</a>
+                            <a href="/product/details/2367">MT5049GS BK BK MT</a>
                           </h6>
                           <h6 class="product-price">
-                            <span>৳ 12,450<small></small></span>
+                            <span>৳ 12,450</span>
                           </h6>
                           <button class="product-add" title="Add to Cart">
                             <i class="fas fa-shopping-basket"></i><span>Add to Cart</span>
@@ -342,6 +788,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       </div>
                     </li>
                   </div>
+                  <!-- Slide 2 -->
                   <div class="swiper-slide" data-swiper-slide-index="1">
                     <li>
                       <div class="product-card">
@@ -359,10 +806,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="product-content">
                           <h6 class="brand-name">Montrex</h6>
                           <h6 class="product-name">
-                            <a href="/product/details/2368" class="">MT5049GS ST BL MT</a>
+                            <a href="/product/details/2368">MT5049GS ST BL MT</a>
                           </h6>
                           <h6 class="product-price">
-                            <span>৳ 10,850<small></small></span>
+                            <span>৳ 10,850</span>
                           </h6>
                           <button class="product-add" title="Add to Cart">
                             <i class="fas fa-shopping-basket"></i><span>Add to Cart</span>
@@ -371,6 +818,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       </div>
                     </li>
                   </div>
+                  <!-- Slide 3 -->
                   <div class="swiper-slide" data-swiper-slide-index="2">
                     <li>
                       <div class="product-card">
@@ -388,10 +836,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="product-content">
                           <h6 class="brand-name">Montrex</h6>
                           <h6 class="product-name">
-                            <a href="/product/details/2369" class="">MT5049GS ST BL MT</a>
+                            <a href="/product/details/2369">MT5049GS ST BL MT</a>
                           </h6>
                           <h6 class="product-price">
-                            <span>৳ 11,400<small></small></span>
+                            <span>৳ 11,400</span>
                           </h6>
                           <button class="product-add" title="Add to Cart">
                             <i class="fas fa-shopping-basket"></i><span>Add to Cart</span>
@@ -400,6 +848,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       </div>
                     </li>
                   </div>
+                  <!-- Slide 4 -->
                   <div class="swiper-slide" data-swiper-slide-index="3">
                     <li>
                       <div class="product-card">
@@ -417,10 +866,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="product-content">
                           <h6 class="brand-name">Montrex</h6>
                           <h6 class="product-name">
-                            <a href="/product/details/2370" class="">MT5049GS ST BL MT</a>
+                            <a href="/product/details/2370">MT5049GS ST BL MT</a>
                           </h6>
                           <h6 class="product-price">
-                            <span>৳ 11,850<small></small></span>
+                            <span>৳ 11,850</span>
                           </h6>
                           <button class="product-add" title="Add to Cart">
                             <i class="fas fa-shopping-basket"></i><span>Add to Cart</span>
@@ -448,8 +897,6 @@ document.addEventListener("DOMContentLoaded", function() {
       </div>
     </section>
     
-
-
 
 
 
@@ -520,9 +967,36 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
       
+<script>
 
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Swiper
+  var swiper = new Swiper('.mySwiper', {
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+  });
 
+  // Color change on hover for Shop New Arrivals
+  document.querySelectorAll('.color-change').forEach(element => {
+    element.addEventListener('mouseover', () => {
+      element.style.animation = 'colorChange 2s infinite';
+    });
+    element.addEventListener('mouseout', () => {
+      element.style.animation = '';
+    });
+  });
+});
+
+
+</script>
 
     <section class="product-of-the-week-section has-bg-light-background-color">
         <div class="spacer" style="height:48px;"></div>
@@ -538,7 +1012,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             <div class="product-image-container">
                 <div class="product-image-wrapper">
-                    <img src="path/to/your/product-image.png" alt="Flare Glaciers" class="product-image">
+                    <img src="C:\Users\paxso\Downloads\Crown Watch\images\gui.png" alt="Flare Glaciers" class="product-image">
                     <div class="product-details">
                         <span class="product-price">$149.00</span>
                         <h3 class="product-name"><a href="#">Flare Glaciers</a></h3>
