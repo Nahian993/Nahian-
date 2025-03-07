@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☬𝓒𝓻𝓸𝔀𝓷 𝓦𝓪𝓽𝓬𝓱☬</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #4CAF50;
+            --background-color: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Segoe UI', system-ui;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--text-light);
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .invoice-header {
+            background: var(--primary-color);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 1.5rem;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: var(--primary-color);
+            color: var (--text-light);
+        }
+
+        .total-display {
+            background-color: #e9ecef;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-top: 2rem;
+        }
+
+        .customer-autocomplete {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background: var(--text-light);
+            width: 100%;
+            z-index: 99;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .autocomplete-item {
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--accent-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: var(--text-light);
+            display: none;
+            z-index: 999;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="invoice-header">
+            <h1 class="text-center mb-3">☬𝓒𝓻𝓸𝔀𝓷 𝓦𝓪𝓽𝓬𝓱☬ System</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="system-info">
+                    <p class="mb-0">Version: 2.1.0</p>
+                    <p class="mb-0">Last Updated: 2024-03-01</p>
+                </div>
+                <div class="company-info text-end">
+                    <h3 class="mb-0">☬𝓒𝓻𝓸𝔀𝓷 𝓦𝓪𝓽𝓬𝓱☬ Ltd.</h3>
+                    <p class="mb-0">Swiss Craftsmanship Since 1920</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4 class="mb-4">Customer Information</h4>
+            <div class="row g-4">
+                <div class="col-md-6 customer-autocomplete">
+                    <input type="text" class="form-control" id="customerSearch" 
+                           placeholder="Search existing customers..." autocomplete="off">
+                    <div class="autocomplete-items d-none"></div>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-secondary w-100" onclick="showCustomerForm()">
+                        + New Customer
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label for="customerSelect" class="form-label">Select Saved Customer</label>
+                    <select class="form-select" id="customerSelect" onchange="invoiceSystem.loadCustomerDetails()">
+                        <option value="">New Customer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="customer-form mt-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="customerName" 
+                               placeholder="Full Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="tel" class="form-control" id="customerPhone" 
+                               placeholder="Phone Number" required>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="email" class="form-control" id="customerEmail" 
+                               placeholder="Email Address">
+                    </div>
+                    <div class="col-md-12">
+                        <textarea class="form-control" id="customerAddress" 
+                                  placeholder="Shipping Address" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4 class="mb-4">Watch Details</h4>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Warranty</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsList">
+                    <!-- Item rows will be inserted here -->
+                </tbody>
+            </table>
+            <button class="btn btn-outline-primary w-100" onclick="addItemRow()">
+                + Add Watch Item
+            </button>
+        </div>
+
+        <div class="form-section">
+            <h4 class="mb-4">Payment Summary</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="total-display">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="subtotalPreview">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>VAT (15%):</span>
+                            <span id="vatPreview">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Discount:</span>
+                            <input type="number" class="form-control discount-input" 
+                                   id="discount" value="0" min="0" step="5">
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span id="totalPreview">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="payment-options">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" 
+                                   id="cashPayment" value="cash" checked>
+                            <label class="form-check-label" for="cashPayment">
+                                Cash Payment
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" 
+                                   id="creditCard" value="credit_card">
+                            <label class="form-check-label" for="creditCard">
+                                Credit Card
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" 
+                                   id="bankTransfer" value="bank_transfer">
+                            <label class="form-check-label" for="bankTransfer">
+                                Bank Transfer
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveClient()">
+                Save Client Details
+            </button>
+            <button class="btn btn-primary" onclick="generateInvoice()">
+                Generate Invoice PDF
+            </button>
+            <button class="btn btn-outline-secondary" onclick="printPreview()">
+                Print Preview
+            </button>
+        </div>
+    </div>
+
+    <div class="notification"></div>
+
+    <script>
+const { jsPDF } = window.jspdf;
+const CUSTOMER_DB = 'luxury_watch_customers';
+const INVOICE_DB = 'luxury_watch_invoices';
+
+class InvoiceSystem {
+    constructor() {
+        this.companyInfo = {
+            name: "Crown Watch Co.",
+            address: "78/2, Masjid Market, Patuatuli Road, Opposite Sumna Hospital, Dhaka 1100",
+            phone: "+880 171 588 1701",
+            email: "humayunkabir@gmail.com",
+            website: "www.crownwatch.com.bd",
+            logo: null,
+         
+                    };
+
+        this.customers = JSON.parse(localStorage.getItem(CUSTOMER_DB)) || [];
+        this.invoices = JSON.parse(localStorage.getItem(INVOICE_DB)) || [];
+        this.currentCustomer = null;
+        this.items = [];
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadCustomers();
+        this.addItemRow();
+        this.loadCompanyLogo();
+        this.populateCustomerSelect();
+    }
+
+    async loadCompanyLogo() {
+        try {
+            const response = await fetch('logo.svg');
+            this.companyInfo.logo = await response.text();
+        } catch (error) {
+            console.error('Error loading logo:', error);
+        }
+    }
+
+    setupEventListeners() {
+        const searchField = document.getElementById('customerSearch');
+        searchField.addEventListener('input', this.debounce((e) =>
+            this.handleCustomerSearch(e.target.value), 300));
+
+        document.getElementById('discount').addEventListener('input', () =>
+            this.updateTotals());
+
+        document.querySelectorAll('[name="paymentMethod"]').forEach(radio =>
+            radio.addEventListener('change', () => {
+                if (typeof this.updatePaymentMethod === 'function') {
+                    this.updatePaymentMethod();
+                }
+            }));
+
+        // Reset current customer when any customer field is manually edited
+        ['customerName', 'customerPhone', 'customerEmail', 'customerAddress'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                this.currentCustomer = null;
+            });
+        });
+    }
+
+    debounce(func, timeout = 300) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => func.apply(this, args), timeout);
+        };
+    }
+
+    // Customer management methods
+    loadCustomers() {
+        const customerSelect = document.getElementById('customerSearch');
+        customerSelect.innerHTML = '';
+        this.customers.forEach(customer => {
+            const option = document.createElement('option');
+            option.value = customer.phone;
+            option.textContent = `${customer.name} - ${customer.phone}`;
+            customerSelect.appendChild(option);
+        });
+    }
+
+    handleCustomerSearch(query) {
+        if (query.length < 2) {
+            document.querySelector('.autocomplete-items').classList.add('d-none');
+            return;
+        }
+
+        const results = this.customers.filter(customer =>
+            customer.phone.includes(query) ||
+            customer.name.toLowerCase().includes(query.toLowerCase())
+        );
+        this.showAutocomplete(results);
+    }
+
+    showAutocomplete(results) {
+        const container = document.querySelector('.autocomplete-items');
+        container.innerHTML = '';
+        container.classList.remove('d-none');
+
+        results.slice(0, 5).forEach(customer => {
+            const div = document.createElement('div');
+            div.className = 'autocomplete-item';
+            div.innerHTML = `
+                <div class="fw-bold">${customer.name}</div>
+                <div>${customer.phone}</div>
+                <small>${customer.email || ''}</small>
+            `;
+            div.onclick = () => this.selectCustomer(customer);
+            container.appendChild(div);
+        });
+    }
+
+    selectCustomer(customer) {
+        this.currentCustomer = customer;
+        document.getElementById('customerName').value = customer.name;
+        document.getElementById('customerPhone').value = customer.phone;
+        document.getElementById('customerEmail').value = customer.email || '';
+        document.getElementById('customerAddress').value = customer.address || '';
+        document.querySelector('.autocomplete-items').classList.add('d-none');
+        this.showNotification('Customer loaded successfully', 'success');
+    }
+
+    populateCustomerSelect() {
+        const select = document.getElementById('customerSelect');
+        // Clear any existing options
+        select.innerHTML = '<option value="">New Customer</option>';
+        this.customers.forEach((customer, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${customer.name} - ${customer.phone}`;
+            select.appendChild(option);
+        });
+    }
+
+    loadCustomerDetails() {
+        const select = document.getElementById('customerSelect');
+        const index = select.value;
+        if (index !== '') {
+            const customer = this.customers[index];
+            this.currentCustomer = customer;
+            document.getElementById('customerName').value = customer.name;
+            document.getElementById('customerPhone').value = customer.phone;
+            document.getElementById('customerEmail').value = customer.email || '';
+            document.getElementById('customerAddress').value = customer.address || '';
+            this.showNotification('Customer loaded successfully', 'success');
+        } else {
+            // Clear form for a new customer
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerEmail').value = '';
+            document.getElementById('customerAddress').value = '';
+            this.currentCustomer = null;
+        }
+    }
+
+    // Item management methods
+    addItemRow() {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <input type="text" class="form-control item-model" required>
+                <textarea class="form-control mt-1 item-description" 
+                          placeholder="Technical specifications" rows="2"></textarea>
+            </td>
+            <td>
+                <input type="number" class="form-control item-qty" value="1" min="1" required>
+            </td>
+            <td>
+                <input type="number" class="form-control item-price" step="0.01" required>
+            </td>
+            <td>
+                <select class="form-select item-warranty">
+                    <option value="2_year">2 Years International</option>
+                    <option value="5_year">5 Years Extended</option>
+                    <option value="lifetime">Lifetime Service</option>
+                </select>
+            </td>
+            <td class="item-total align-middle">$0.00</td>
+            <td class="align-middle">
+                <button class="btn btn-sm btn-danger" onclick="invoiceSystem.removeItemRow(this)">×</button>
+            </td>
+        `;
+        row.querySelectorAll('input, textarea, select').forEach(element =>
+            element.addEventListener('input', () => this.updateItemTotal(row))
+        );
+        document.getElementById('itemsList').appendChild(row);
+        this.items.push(row);
+        this.updateTotals();
+    }
+
+    removeItemRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+        this.items = this.items.filter(item => item !== row);
+        this.updateTotals();
+        this.showNotification('Item removed', 'success');
+    }
+
+    updateItemTotal(row) {
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        const total = qty * price;
+        row.querySelector('.item-total').textContent = `$${total.toFixed(2)}`;
+        this.updateTotals();
+    }
+
+    updateTotals() {
+        const subtotal = this.items.reduce((sum, row) => {
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            return sum + (qty * price);
+        }, 0);
+
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        const vat = (subtotal - discount) * 0.15;
+        const total = (subtotal - discount) + vat;
+
+        document.getElementById('subtotalPreview').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('vatPreview').textContent = `$${vat.toFixed(2)}`;
+        document.getElementById('totalPreview').textContent = `$${total.toFixed(2)}`;
+    }
+
+    validateForm() {
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        if (!this.currentCustomer && name && phone) {
+            this.currentCustomer = {
+                name: name,
+                phone: phone,
+                email: document.getElementById('customerEmail').value,
+                address: document.getElementById('customerAddress').value
+            };
+        }
+        if (!this.currentCustomer) {
+            this.showNotification('Please select or create a customer', 'error');
+            return false;
+        }
+        if (this.items.length === 0) {
+            this.showNotification('Please add at least one item', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    saveCustomer() {
+        const customer = {
+            name: document.getElementById('customerName').value,
+            phone: document.getElementById('customerPhone').value,
+            email: document.getElementById('customerEmail').value,
+            address: document.getElementById('customerAddress').value
+        };
+
+        if (!customer.name || !customer.phone) {
+            this.showNotification('Name and phone are required', 'error');
+            return;
+        }
+
+        const exists = this.customers.some(c => c.phone === customer.phone);
+        if (!exists) {
+            this.customers.push(customer);
+            localStorage.setItem(CUSTOMER_DB, JSON.stringify(this.customers));
+            this.currentCustomer = customer;
+            this.showNotification('Customer saved successfully', 'success');
+            this.populateCustomerSelect();
+        } else {
+            this.showNotification('Customer already exists', 'error');
+        }
+    }
+
+    // PDF Generation methods
+    generateInvoicePDF() {
+        if (!this.validateForm()) return;
+        const doc = new jsPDF('p', 'mm', 'a4');
+      
+        // Generate the invoice number only once (8 digits)
+        const invNumber = String(Date.now()).slice(-8);
+      
+        // Draw fixed header elements
+        this.addHeader(doc);
+        this.addCustomerInfo(doc);
+        this.addInvoiceDetails(doc, invNumber);
+      
+        // Increase startY value so there's clear space after header info
+        const tableStartY = 110;
+      
+        // Prepare data for the table
+        const tableCols = ["Model", "Description", "Qty", "Unit Price", "Warranty", "Total"];
+        const itemsData = this.items.map(row => {
+            return [
+                row.querySelector('.item-model').value,
+                row.querySelector('.item-description').value,
+                row.querySelector('.item-qty').value,
+                `$${parseFloat(row.querySelector('.item-price').value).toFixed(2)}`,
+                row.querySelector('.item-warranty').value.replace('_', ' ').toUpperCase(),
+                row.querySelector('.item-total').textContent
+            ];
+        });
+      
+        // Use jsPDF-AutoTable with updated startY for proper spacing
+        doc.autoTable({
+            startY: tableStartY,
+            head: [tableCols],
+            body: itemsData,
+            theme: 'grid',
+            headStyles: { fillColor: [44, 62, 80], textColor: 255, fontStyle: 'bold' },
+            styles: { font: "helvetica", fontSize: 10 },
+            margin: { left: 20, right: 20 }
+        });
+      
+        // Calculate Y position for totals based on last table draw
+        const finalY = doc.lastAutoTable.finalY + 10;
+        this.addTotals(doc, finalY);
+        this.addFooter(doc);
+      
+        // Use the same invoice number for the filename
+        const invoiceNumber = `INV-${invNumber}`;
+        doc.save(`${invoiceNumber}.pdf`);
+        this.saveInvoice(invoiceNumber);
+        this.showNotification('Invoice generated and saved successfully', 'success');
+        this.newInvoice();
+    }
+      
+    addInvoiceDetails(doc, invNum) {
+        doc.setFont('helvetica', 'bold');
+        // You can adjust the x coordinate here if needed. Currently printing details at x=140.
+        doc.text("INVOICE DETAILS", 140, 60);
+        doc.setFont('helvetica', 'normal');
+      
+        const details = [
+            `Invoice Number: INV-${invNum}`,
+            `Date: ${new Date().toLocaleDateString()}`,
+            `Payment Method: ${document.querySelector('[name="paymentMethod"]:checked').value}`,
+            `Sales Representative: Humayun`
+        ];
+      
+        doc.text(details, 140, 66);
+    }
+
+    addTotals(doc, startY) {
+        const subtotal = parseFloat(document.getElementById('subtotalPreview').textContent.slice(1));
+        const vat = parseFloat(document.getElementById('vatPreview').textContent.slice(1));
+        const total = parseFloat(document.getElementById('totalPreview').textContent.slice(1));
+
+        doc.setFont('helvetica', 'bold');
+        doc.text("TOTAL SUMMARY", 140, startY);
+        doc.setFont('helvetica', 'normal');
+
+        const totals = [
+            `Subtotal: $${subtotal.toFixed(2)}`,
+            `Discount: $${document.getElementById('discount').value || '0.00'}`,
+            `VAT (15%): $${vat.toFixed(2)}`,
+            { text: `Grand Total: $${total.toFixed(2)}`, style: 'bold' }
+        ];
+
+        let yPos = startY + 6;
+        totals.forEach(item => {
+            if (typeof item === 'object') {
+                doc.setFont('helvetica', 'bold');
+                doc.text(item.text, 140, yPos);
+                doc.setFont('helvetica', 'normal');
+            } else {
+                doc.text(item, 140, yPos);
+            }
+            yPos += 6;
+        });
+    }
+
+    saveInvoice(invoiceNumber) {
+        // Prepare list of items from the table
+        const savedItems = this.items.map(row => {
+            return {
+                model: row.querySelector('.item-model').value,
+                description: row.querySelector('.item-description').value,
+                qty: parseFloat(row.querySelector('.item-qty').value),
+                price: parseFloat(row.querySelector('.item-price').value),
+                warranty: row.querySelector('.item-warranty').value,
+                total: row.querySelector('.item-total').textContent
+            };
+        });
+
+        // Create an invoice object with customer details, items and totals
+        const invoice = {
+            invoiceNumber: invoiceNumber,
+            customer: { ...this.currentCustomer },
+            items: savedItems,
+            totals: {
+                subtotal: document.getElementById('subtotalPreview').textContent,
+                vat: document.getElementById('vatPreview').textContent,
+                total: document.getElementById('totalPreview').textContent,
+                discount: document.getElementById('discount').value || '0.00'
+            },
+            date: new Date().toISOString()
+        };
+
+        // Add and save to the array of invoices
+        this.invoices.push(invoice);
+        localStorage.setItem(INVOICE_DB, JSON.stringify(this.invoices));
+    }
+
+    newInvoice() {
+        // Clear the items list and reset customer details so a new invoice can be recorded.
+        this.items = [];
+        document.getElementById('itemsList').innerHTML = '';
+        this.addItemRow();
+        // Optionally, also clear customer fields if you want to force a new customer selection.
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        document.getElementById('customerEmail').value = '';
+        document.getElementById('customerAddress').value = '';
+        this.currentCustomer = null;
+        // Reset totals (if needed)
+        document.getElementById('subtotalPreview').textContent = '$0.00';
+        document.getElementById('vatPreview').textContent = '$0.00';
+        document.getElementById('totalPreview').textContent = '$0.00';
+    }
+
+    addHeader(doc) {
+        if (this.companyInfo.logo) {
+            // Ensure your environment supports addSvgAsImage or adjust accordingly.
+            doc.addSvgAsImage(this.companyInfo.logo, 20, 10, 40, 20);
+        }
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(40);
+        doc.text(this.companyInfo.name, 70, 20);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(this.companyInfo.address.split('\n'), 70, 28);
+        doc.text(`Phone: ${this.companyInfo.phone} | Email: ${this.companyInfo.email}`, 70, 38);
+        doc.text(`VAT ID: ${this.companyInfo.taxId}`, 70, 43);
+        doc.setLineWidth(0.5);
+        doc.line(20, 48, 190, 48);
+    }
+
+    addCustomerInfo(doc) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text("BILL TO:", 20, 60);
+        doc.setFont('helvetica', 'normal');
+
+        const customer = this.currentCustomer;
+        const customerInfo = [
+            customer.name,
+            `Phone: ${customer.phone}`,
+            `Email: ${customer.email}`,
+            customer.address
+        ].filter(Boolean);
+        doc.text(customerInfo, 20, 66);
+    }
+
+    addItemsTable(doc) {
+        const headers = ["Description", "Qty", "Unit Price", "Warranty", "Total"];
+        const columnPositions = [20, 100, 120, 140, 160];
+        let yPos = 90;
+
+        this.drawTableHeader(doc, yPos - 10);
+
+        this.items.forEach(row => {
+            if (yPos > 250) {
+                doc.addPage('a4', 'p');
+                yPos = 20;
+                this.addHeader(doc);
+                yPos = 90;
+                this.drawTableHeader(doc, yPos - 10);
+            }
+
+            doc.setTextColor(0);
+            const model = row.querySelector('.item-model').value;
+            const desc = row.querySelector('.item-description').value;
+            const qty = row.querySelector('.item-qty').value;
+            const price = row.querySelector('.item-price').value;
+            const warranty = row.querySelector('.item-warranty').value;
+            const total = row.querySelector('.item-total').textContent;
+
+            const splitText = doc.splitTextToSize(`${model}\n${desc}`, 70);
+            doc.text(splitText, 22, yPos + 5);
+            doc.text(qty, 102, yPos + 5);
+            doc.text(`$${parseFloat(price).toFixed(2)}`, 122, yPos + 5);
+            doc.text(warranty.replace('_', ' ').toUpperCase(), 142, yPos + 5);
+            doc.text(total, 162, yPos + 5);
+
+            doc.setLineWidth(0.2);
+            doc.line(20, yPos + 10, 190, yPos + 10);
+            yPos += 15 + (splitText.length - 1) * 5;
+        });
+    }
+
+    drawTableHeader(doc, yPos) {
+        doc.setFillColor(51, 51, 51);
+        doc.rect(20, yPos, 170, 10, 'F');
+        doc.setTextColor(255);
+        ["Description", "Qty", "Unit Price", "Warranty", "Total"].forEach((text, i) => {
+            doc.text(text, [20, 100, 120, 140, 160][i], yPos + 5);
+        });
+    }
+
+    addFooter(doc) {
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        const footerText = [
+            "TERMS & CONDITIONS:",
+            "1. Warranty valid only with original purchase document",
+            "2. Physical damage and water damage excluded from warranty",
+            "3. All prices in BDT, subject to exchange rate fluctuations",
+            "4. Late payments subject to 2% monthly interest charge",
+            "Authorized Signature: ________________________________________"
+        ];
+        doc.text(footerText, 20, 270);
+        doc.text(`Page 1 of 1 | Generated: ${new Date().toLocaleString()}`, 20, 287);
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.querySelector('.notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.style.display = 'block';
+
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Initialize the system
+const invoiceSystem = new InvoiceSystem();
+
+// Global functions for HTML event handlers
+function addItemRow() { invoiceSystem.addItemRow(); }
+function generateInvoice() { invoiceSystem.generateInvoicePDF(); }
+function saveClient() { invoiceSystem.saveCustomer(); }
+function printPreview() { if (typeof invoiceSystem.showPrintPreview === 'function') invoiceSystem.showPrintPreview(); }
+function showCustomerForm() { /* Implement customer form toggle if needed */ }
+    </script>
+</body>
+</html>
